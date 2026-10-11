@@ -1,232 +1,254 @@
 
- // ==========================================
- // FINAL MESSAGE — EDIT THIS PART IF NEEDED
- // ==========================================
-
-const finalTitle = "YOUR FREE TRIAL HAS EXPIRED 💔";
-
-const finalMessage = `hey gorgeous 💋
-
-your free trial of this situationship has officially expired.
-
-to continue your subscription, please pay $1,000 a week.
-
-no refunds. ♡`;
-
-// ==========================================
-// THE 8 RELATIONSHIP QUESTIONS
-// ==========================================
-
 const questions = [
   {
-    question: "what matters most in a relationship? 💋",
-    description: "every relationship is different. what do you think matters most?",
+    question: "what makes a relationship healthy? ♡",
+    hint: "let's start with the basics...",
     answers: [
-      "♡ trust and honesty",
-      "♡ communication",
-      "♡ effort from both people"
-    ]
+      "trust, respect, and communication",
+      "always agreeing with each other",
+      "never talking about problems"
+    ],
+    correct: 0
   },
   {
-    question: "can you love someone and still not be right for them? 🖤",
-    description: "sometimes feelings and compatibility aren't the same thing...",
+    question: "what should you do when something feels wrong?",
+    hint: "communication is key 💌",
     answers: [
-      "♡ yes, absolutely",
-      "♡ sometimes, yeah",
-      "♡ it depends on the people"
-    ]
+      "pretend nothing happened",
+      "talk honestly about your feelings",
+      "ignore the other person"
+    ],
+    correct: 1
   },
   {
-    question: "words or actions? 💌",
-    description: "which one means more when someone says they care about you?",
+    question: "what does trust mean in a relationship? 🎀",
+    hint: "think about what builds a strong connection",
     answers: [
-      "♡ words that make you feel loved",
-      "♡ actions that prove it",
-      "♡ both gotta match"
-    ]
+      "having to check everything",
+      "never needing boundaries",
+      "feeling safe and being honest"
+    ],
+    correct: 2
   },
   {
-    question: "what if someone's feelings change? 🎀",
-    description: "feelings can change, even when nobody planned for them to.",
+    question: "is it okay to set personal boundaries? 💗",
+    hint: "everybody has their own needs",
     answers: [
-      "♡ be honest about it",
-      "♡ talk it through together",
-      "♡ don't lead someone on"
-    ]
+      "yes, boundaries matter",
+      "no, boundaries ruin everything",
+      "only when the other person agrees"
+    ],
+    correct: 0
   },
   {
-    question: "is it fair to stay when your heart isn't in it? 💔",
-    description: "think about how honesty affects both people.",
+    question: "what should happen when feelings change? 🦋",
+    hint: "sometimes life gets complicated",
     answers: [
-      "♡ no, both deserve honesty",
-      "♡ only if you're working things out",
-      "♡ it's better to communicate first"
-    ]
+      "hide it forever",
+      "be honest and communicate",
+      "keep making promises you don't mean"
+    ],
+    correct: 1
   },
   {
-    question: "can a relationship teach you something even if it ends? 🦋",
-    description: "not every connection lasts forever, but experiences can still matter.",
+    question: "does caring about someone mean you must stay together?",
+    hint: "this one's a little deeper...",
     answers: [
-      "♡ yes, you learn about yourself",
-      "♡ definitely, every experience matters",
-      "♡ yes, even the difficult ones"
-    ]
+      "yes, no matter what",
+      "only if other people approve",
+      "no, caring and compatibility aren't the same"
+    ],
+    correct: 2
   },
   {
-    question: "what's a sign of a healthy relationship? 💗",
-    description: "what makes a relationship feel safe and genuine?",
+    question: "what is the kindest way to end a relationship? 💌",
+    hint: "think about the other person's feelings",
     answers: [
-      "♡ trust and respect",
-      "♡ feeling heard and understood",
-      "♡ both people putting in effort"
-    ]
+      "be honest, direct, and respectful",
+      "disappear without saying anything",
+      "make the other person guess"
+    ],
+    correct: 0
   },
   {
-    question: "one last question, pretty girl... ✨",
-    description: "do you think it's important to be honest with someone, even when the truth is difficult?",
+    question: "what do both people deserve? ♡",
+    hint: "last question, you've got this!",
     answers: [
-      "♡ yes, honesty matters",
-      "♡ yes, even when it's hard",
-      "♡ definitely, everyone deserves clarity"
-    ]
+      "to be together forever, no matter what",
+      "honesty, respect, and kindness",
+      "to never have difficult conversations"
+    ],
+    correct: 1
   }
 ];
 
-// ==========================================
-// GAME ENGINE
-// ==========================================
+const finalMessage = `i just wanna say that i've genuinely enjoyed the time we've spent talking and getting to know each other. you've made me smile, and i'm grateful for the memories and the moments we've shared. i don't regret any of it, and i hope you know that you didn't do anything wrong.
 
-const questionEl = document.getElementById("question");
-const descriptionEl = document.getElementById("description");
-const choicesEl = document.getElementById("choices");
-const finalScreen = document.getElementById("finalMessage");
+but as much as i've enjoyed everything, i don't think i can keep doing this anymore. i don't wanna lead you on or keep something going when my heart isn't fully in it anymore. you deserve honesty, and i didn't wanna leave you wondering what happened or why things changed.
+
+i really do wish you the best, and i hope life brings you so many good things. thank you for the laughs, the conversations, and the time we had together. i'll always appreciate that.
+
+take care of yourself 💗`;
+
+const welcomeScreen = document.getElementById("welcome");
+const quizScreen = document.getElementById("quiz");
+const loadingScreen = document.getElementById("loading");
+const endingScreen = document.getElementById("ending");
+
+const startBtn = document.getElementById("startBtn");
+const questionCount = document.getElementById("questionCount");
+const progressBar = document.getElementById("progressBar");
+const questionText = document.getElementById("questionText");
+const questionHint = document.getElementById("questionHint");
+const answersContainer = document.getElementById("answers");
+const feedback = document.getElementById("feedback");
 const typedMessage = document.getElementById("typedMessage");
-const finalTitleEl = document.getElementById("finalTitle");
-const progressFill = document.getElementById("progressFill");
-const stepLabel = document.getElementById("stepLabel");
-const eyebrow = document.getElementById("eyebrow");
-const pixelHeart = document.querySelector(".pixel-heart");
+const cursor = document.querySelector(".cursor");
+const loadingText = document.getElementById("loadingText");
 
+let currentQuestion = 0;
 let typingTimer = null;
+let answerLocked = false;
 
-function showQuestion(index) {
-  if (index >= questions.length) {
-    showEnding();
+function showScreen(screen) {
+  document.querySelectorAll(".screen").forEach(item => {
+    item.classList.remove("active");
+  });
+
+  screen.classList.add("active");
+}
+
+startBtn.addEventListener("click", () => {
+  currentQuestion = 0;
+  showScreen(quizScreen);
+  renderQuestion();
+});
+
+function renderQuestion() {
+  answerLocked = false;
+
+  const item = questions[currentQuestion];
+
+  questionCount.textContent =
+    `${String(currentQuestion + 1).padStart(2, "0")} / ${String(questions.length).padStart(2, "0")}`;
+
+  progressBar.style.width =
+    `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+  questionText.textContent = item.question;
+  questionHint.textContent = item.hint;
+  feedback.textContent = "";
+  answersContainer.innerHTML = "";
+
+  item.answers.forEach((answer, index) => {
+    const button = document.createElement("button");
+
+    button.className = "answer-btn";
+    button.type = "button";
+    button.textContent = `${["♡", "✧", "♥"][index]}  ${answer}`;
+
+    button.addEventListener("click", () => {
+      selectAnswer(index, button);
+    });
+
+    answersContainer.appendChild(button);
+  });
+}
+
+function selectAnswer(index, selectedButton) {
+  if (answerLocked) return;
+
+  const item = questions[currentQuestion];
+
+  if (index !== item.correct) {
+    feedback.textContent = "not quite! give it another thought ♡";
+
+    selectedButton.classList.add("wrong");
+
+    // Let the player try another answer.
+    // Incorrect choices do not lock the question.
     return;
   }
 
-  const item = questions[index];
+  answerLocked = true;
+  selectedButton.classList.add("correct");
 
-  questionEl.textContent = item.question;
-  descriptionEl.textContent = item.description;
-
-  eyebrow.textContent = "✧ RELATIONSHIP QUIZ.EXE ✧";
-
-  choicesEl.innerHTML = "";
-  choicesEl.classList.remove("hidden");
-
-  item.answers.forEach((answer, answerIndex) => {
-    const button = document.createElement("button");
-
-    button.className =
-      answerIndex === 0 ? "choice" : "choice secondary";
-
-    button.textContent = answer;
-
-    button.addEventListener("click", () => {
-      showQuestion(index + 1);
-    });
-
-    choicesEl.appendChild(button);
+  answersContainer.querySelectorAll("button").forEach(button => {
+    button.disabled = true;
   });
 
-  progressFill.style.width =
-    `${((index + 1) / questions.length) * 100}%`;
+  feedback.textContent = "that's right! ♡";
 
-  stepLabel.textContent =
-    `QUESTION ${String(index + 1).padStart(2, "0")} / 08`;
+  setTimeout(() => {
+    currentQuestion++;
 
-  questionEl.animate(
-    [
-      { opacity: 0, transform: "translateY(8px)" },
-      { opacity: 1, transform: "translateY(0)" }
-    ],
-    { duration: 350, easing: "ease-out" }
-  );
+    if (currentQuestion < questions.length) {
+      renderQuestion();
+    } else {
+      beginEnding();
+    }
+  }, 700);
 }
 
-function showEnding() {
-  clearInterval(typingTimer);
+function beginEnding() {
+  showScreen(loadingScreen);
+  loadingText.textContent = "putting the pieces together...";
 
-  progressFill.style.width = "100%";
-  stepLabel.textContent = "FINAL MESSAGE ♡";
+  setTimeout(() => {
+    showScreen(endingScreen);
+    startTyping();
+  }, 2800);
+}
 
-  questionEl.classList.add("hidden");
-  descriptionEl.classList.add("hidden");
-  choicesEl.classList.add("hidden");
-  pixelHeart.classList.add("hidden");
-  eyebrow.classList.add("hidden");
-
-  finalScreen.classList.remove("hidden");
-  finalTitleEl.textContent = finalTitle;
+function startTyping() {
+  if (typingTimer) {
+    clearTimeout(typingTimer);
+  }
 
   typedMessage.textContent = "";
-  typedMessage.classList.add("typing");
+  cursor.style.display = "inline-block";
 
   let position = 0;
 
-  typingTimer = setInterval(() => {
+  function typeNextCharacter() {
     if (position >= finalMessage.length) {
-      clearInterval(typingTimer);
-      typedMessage.classList.remove("typing");
+      cursor.style.display = "none";
       return;
     }
 
     typedMessage.textContent += finalMessage.charAt(position);
     position++;
-  }, 28);
+
+    // Slightly faster for spaces, while keeping the typewriter effect.
+    const character = finalMessage.charAt(position - 1);
+    const delay = character === "\n" ? 180 : 23;
+
+    typingTimer = setTimeout(typeNextCharacter, delay);
+  }
+
+  typeNextCharacter();
 }
 
-// ==========================================
-// FLOATING Y2K HEARTS AND SPARKLES
-// ==========================================
+// Floating sparkles and hearts: visual effects only, no audio.
+function createSparkles() {
+  const layer = document.getElementById("sparkles");
+  const symbols = ["♡", "✧", "⋆", "♥", "✦"];
 
-const sparkleContainer = document.getElementById("sparkles");
-const sparkleSymbols = ["✦", "♡", "✧", "⋆", "♥"];
+  for (let i = 0; i < 22; i++) {
+    const sparkle = document.createElement("span");
 
-function makeSparkle() {
-  const sparkle = document.createElement("span");
-
-  sparkle.className = "sparkle";
-
-  sparkle.textContent =
-    sparkleSymbols[
-      Math.floor(Math.random() * sparkleSymbols.length)
+    sparkle.className = "sparkle";
+    sparkle.textContent = symbols[
+      Math.floor(Math.random() * symbols.length)
     ];
 
-  sparkle.style.left = Math.random() * 100 + "vw";
+    sparkle.style.left = `${Math.random() * 100}%`;
+    sparkle.style.animationDelay = `${Math.random() * 12}s`;
+    sparkle.style.animationDuration = `${9 + Math.random() * 12}s`;
+    sparkle.style.fontSize = `${10 + Math.random() * 13}px`;
 
-  sparkle.style.fontSize =
-    (10 + Math.random() * 14) + "px";
-
-  sparkle.style.animationDuration =
-    (7 + Math.random() * 8) + "s";
-
-  sparkleContainer.appendChild(sparkle);
-
-  setTimeout(() => {
-    sparkle.remove();
-  }, 16000);
+    layer.appendChild(sparkle);
+  }
 }
 
-for (let i = 0; i < 12; i++) {
-  setTimeout(makeSparkle, i * 350);
-}
-
-setInterval(makeSparkle, 850);
-
-// ==========================================
-// START THE GAME
-// ==========================================
-
-showQuestion(0);
+createSparkles();
