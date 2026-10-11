@@ -11,8 +11,8 @@ const questions = [
     correct: 0
   },
   {
-    question: "what should you do when something feels wrong?",
-    hint: "communication is key 💌",
+    question: "what should you do when something feels wrong? 💌",
+    hint: "communication is key...",
     answers: [
       "pretend nothing happened",
       "talk honestly about your feelings",
@@ -22,7 +22,7 @@ const questions = [
   },
   {
     question: "what does trust mean in a relationship? 🎀",
-    hint: "think about what builds a strong connection",
+    hint: "think about what builds a connection",
     answers: [
       "having to check everything",
       "never needing boundaries",
@@ -42,11 +42,11 @@ const questions = [
   },
   {
     question: "what should happen when feelings change? 🦋",
-    hint: "sometimes life gets complicated",
+    hint: "sometimes things get complicated...",
     answers: [
       "hide it forever",
       "be honest and communicate",
-      "keep making promises you don't mean"
+      "make promises you don't mean"
     ],
     correct: 1
   },
@@ -82,7 +82,6 @@ const questions = [
   }
 ];
 
-// FINAL HEARTFELT MESSAGE 💗
 const finalMessage = `i just wanna say that i've genuinely enjoyed the time we've spent talking and getting to know each other. you've made me smile, and i'm grateful for the memories and the moments we've shared. i don't regret any of it, and i hope you know that you didn't do anything wrong.
 
 but as much as i've enjoyed everything, i don't think i can keep doing this anymore. i don't wanna lead you on or keep something going when my heart isn't fully in it anymore. you deserve honesty, and i didn't wanna leave you wondering what happened or why things changed.
@@ -91,25 +90,46 @@ i really do wish you the best, and i hope life brings you so many good things. t
 
 take care of yourself 💗`;
 
-const welcomeScreen = document.getElementById("welcome");
-const quizScreen = document.getElementById("quiz");
-const loadingScreen = document.getElementById("loading");
-const endingScreen = document.getElementById("ending");
+const $ = id => document.getElementById(id);
 
-const startBtn = document.getElementById("startBtn");
-const questionCount = document.getElementById("questionCount");
-const progressBar = document.getElementById("progressBar");
-const questionText = document.getElementById("questionText");
-const questionHint = document.getElementById("questionHint");
-const answersContainer = document.getElementById("answers");
-const feedback = document.getElementById("feedback");
-const typedMessage = document.getElementById("typedMessage");
-const cursor = document.querySelector(".cursor");
-const loadingText = document.getElementById("loadingText");
+const content = document.querySelector(".content");
+const welcome = $("welcome");
+const questionTemplate = $("questionScreen");
+const loading = $("loading");
+const ending = $("ending");
 
 let currentQuestion = 0;
+let locked = false;
 let typingTimer = null;
-let answerLocked = false;
+let loadingTimer = null;
+let messageInterval = null;
+const questionScreens = [];
+
+/* BUILD EIGHT SEPARATE QUESTION SCREENS */
+questions.forEach((question, index) => {
+  const screen = questionTemplate.cloneNode(true);
+
+  screen.id = `question-screen-${index + 1}`;
+  screen.classList.remove("active");
+
+  screen.querySelector("#questionCount").id =
+    `questionCount-${index}`;
+  screen.querySelector("#progressBar").id =
+    `progressBar-${index}`;
+  screen.querySelector("#questionText").id =
+    `questionText-${index}`;
+  screen.querySelector("#questionHint").id =
+    `questionHint-${index}`;
+  screen.querySelector("#answers").id =
+    `answers-${index}`;
+  screen.querySelector("#feedback").id =
+    `feedback-${index}`;
+
+  content.insertBefore(screen, loading);
+  questionScreens.push(screen);
+});
+
+questionTemplate.remove();
 
 function showScreen(screen) {
   document.querySelectorAll(".screen").forEach(item => {
@@ -117,146 +137,192 @@ function showScreen(screen) {
   });
 
   screen.classList.add("active");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
-startBtn.addEventListener("click", () => {
+$("startBtn").addEventListener("click", () => {
   currentQuestion = 0;
-  showScreen(quizScreen);
   renderQuestion();
+  showScreen(questionScreens[0]);
 });
 
 function renderQuestion() {
-  answerLocked = false;
+  locked = false;
 
-  const item = questions[currentQuestion];
+  const question = questions[currentQuestion];
+  const screen = questionScreens[currentQuestion];
 
-  questionCount.textContent =
-    `${String(currentQuestion + 1).padStart(2, "0")} / ${String(questions.length).padStart(2, "0")}`;
+  const count = screen.querySelector(
+    `#questionCount-${currentQuestion}`
+  );
+  const bar = screen.querySelector(
+    `#progressBar-${currentQuestion}`
+  );
+  const text = screen.querySelector(
+    `#questionText-${currentQuestion}`
+  );
+  const hint = screen.querySelector(
+    `#questionHint-${currentQuestion}`
+  );
+  const answers = screen.querySelector(
+    `#answers-${currentQuestion}`
+  );
+  const feedback = screen.querySelector(
+    `#feedback-${currentQuestion}`
+  );
 
-  progressBar.style.width =
-    `${((currentQuestion + 1) / questions.length) * 100}%`;
+  count.textContent =
+    `QUESTION ${String(currentQuestion + 1).padStart(2, "0")} / 08`;
 
-  questionText.textContent = item.question;
-  questionHint.textContent = item.hint;
+  bar.style.width = `${(currentQuestion / questions.length) * 100}%`;
+
+  text.textContent = question.question;
+  hint.textContent = question.hint;
   feedback.textContent = "";
-  answersContainer.innerHTML = "";
+  answers.replaceChildren();
 
-  item.answers.forEach((answer, index) => {
+  question.answers.forEach((answer, index) => {
     const button = document.createElement("button");
 
     button.className = "answer-btn";
-    button.type = "button";
-    button.textContent = `${["♡", "✧", "♥"][index]}  ${answer}`;
+    button.textContent =
+      `${String.fromCharCode(65 + index)}. ${answer}`;
 
     button.addEventListener("click", () => {
-      selectAnswer(index, button);
+      selectAnswer(index);
     });
 
-    answersContainer.appendChild(button);
+    answers.appendChild(button);
   });
 }
 
-function selectAnswer(index, selectedButton) {
-  if (answerLocked) return;
+function selectAnswer(selectedIndex) {
+  if (locked) return;
 
-  const item = questions[currentQuestion];
+  const question = questions[currentQuestion];
+  const screen = questionScreens[currentQuestion];
 
-  if (index !== item.correct) {
-    feedback.textContent =
-      "not quite! give it another thought ♡";
+  const answers = screen.querySelector(
+    `#answers-${currentQuestion}`
+  );
+  const feedback = screen.querySelector(
+    `#feedback-${currentQuestion}`
+  );
+  const bar = screen.querySelector(
+    `#progressBar-${currentQuestion}`
+  );
 
-    selectedButton.classList.add("wrong");
+  const buttons = answers.querySelectorAll("button");
+
+  if (selectedIndex !== question.correct) {
+    feedback.textContent = "not quite, try again! ♡";
+    buttons[selectedIndex].classList.add("wrong");
+    buttons[selectedIndex].disabled = true;
     return;
   }
 
-  answerLocked = true;
-  selectedButton.classList.add("correct");
+  locked = true;
+  buttons[selectedIndex].classList.add("correct");
 
-  answersContainer.querySelectorAll("button").forEach(button => {
+  buttons.forEach(button => {
     button.disabled = true;
   });
 
-  feedback.textContent = "that's right! ♡";
+  feedback.textContent = "correct! you're doing great 💗";
+  bar.style.width =
+    `${((currentQuestion + 1) / questions.length) * 100}%`;
 
-  setTimeout(() => {
+  window.setTimeout(() => {
     currentQuestion++;
 
     if (currentQuestion < questions.length) {
       renderQuestion();
+
+      /* SWITCH TO A DIFFERENT SCREEN ELEMENT */
+      showScreen(questionScreens[currentQuestion]);
     } else {
       beginEnding();
     }
-  }, 700);
+  }, 650);
 }
 
 function beginEnding() {
-  showScreen(loadingScreen);
+  showScreen(loading);
 
-  loadingText.textContent =
-    "putting the pieces together...";
+  const messages = [
+    "analyzing your answers... ♡",
+    "preparing your results... 💌",
+    "almost ready... 💗"
+  ];
 
-  setTimeout(() => {
-    showScreen(endingScreen);
+  let index = 0;
+  $("loadingText").textContent = messages[0];
+
+  messageInterval = window.setInterval(() => {
+    index++;
+
+    if (index < messages.length) {
+      $("loadingText").textContent = messages[index];
+    }
+  }, 800);
+
+  loadingTimer = window.setTimeout(() => {
+    window.clearInterval(messageInterval);
+    messageInterval = null;
+
+    showScreen(ending);
     startTyping();
   }, 2800);
 }
 
 function startTyping() {
   if (typingTimer) {
-    clearTimeout(typingTimer);
+    window.clearTimeout(typingTimer);
   }
 
-  typedMessage.textContent = "";
+  const output = $("typedMessage");
+  const cursor = $("cursor");
+
+  output.textContent = "";
   cursor.style.display = "inline-block";
 
-  let position = 0;
+  let index = 0;
 
-  function typeNextCharacter() {
-    if (position >= finalMessage.length) {
+  function typeNext() {
+    if (index >= finalMessage.length) {
       cursor.style.display = "none";
       return;
     }
 
-    typedMessage.textContent +=
-      finalMessage.charAt(position);
+    output.textContent += finalMessage[index];
 
-    position++;
+    const delay = finalMessage[index] === "\n" ? 180 : 23;
+    index++;
 
-    const character = finalMessage.charAt(position - 1);
-    const delay = character === "\n" ? 180 : 23;
-
-    typingTimer = setTimeout(
-      typeNextCharacter,
-      delay
-    );
+    typingTimer = window.setTimeout(typeNext, delay);
   }
 
-  typeNextCharacter();
+  typeNext();
 }
 
-// Floating hearts and sparkles — no sound effects.
+/* FLOATING PINK SPARKLES — NO SOUND EFFECTS */
 function createSparkles() {
-  const layer = document.getElementById("sparkles");
-  const symbols = ["♡", "✧", "⋆", "♥", "✦"];
+  const layer = $("sparkles");
+  const symbols = ["♡", "✧", "♥", "⋆", "✦"];
 
   for (let i = 0; i < 22; i++) {
     const sparkle = document.createElement("span");
 
     sparkle.className = "sparkle";
-
-    sparkle.textContent =
-      symbols[Math.floor(Math.random() * symbols.length)];
-
+    sparkle.textContent = symbols[i % symbols.length];
     sparkle.style.left = `${Math.random() * 100}%`;
-
-    sparkle.style.animationDelay =
-      `${Math.random() * 12}s`;
-
-    sparkle.style.animationDuration =
-      `${9 + Math.random() * 12}s`;
-
-    sparkle.style.fontSize =
-      `${10 + Math.random() * 13}px`;
+    sparkle.style.fontSize = `${12 + Math.random() * 15}px`;
+    sparkle.style.animationDuration = `${7 + Math.random() * 10}s`;
+    sparkle.style.animationDelay = `${Math.random() * 10}s`;
 
     layer.appendChild(sparkle);
   }
