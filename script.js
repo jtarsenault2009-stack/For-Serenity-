@@ -82,6 +82,7 @@ const questions = [
   }
 ];
 
+// FINAL HEARTFELT MESSAGE 💗
 const finalMessage = `i just wanna say that i've genuinely enjoyed the time we've spent talking and getting to know each other. you've made me smile, and i'm grateful for the memories and the moments we've shared. i don't regret any of it, and i hope you know that you didn't do anything wrong.
 
 but as much as i've enjoyed everything, i don't think i can keep doing this anymore. i don't wanna lead you on or keep something going when my heart isn't fully in it anymore. you deserve honesty, and i didn't wanna leave you wondering what happened or why things changed.
@@ -161,12 +162,10 @@ function selectAnswer(index, selectedButton) {
   const item = questions[currentQuestion];
 
   if (index !== item.correct) {
-    feedback.textContent = "not quite! give it another thought ♡";
+    feedback.textContent =
+      "not quite! give it another thought ♡";
 
     selectedButton.classList.add("wrong");
-
-    // Let the player try another answer.
-    // Incorrect choices do not lock the question.
     return;
   }
 
@@ -192,7 +191,9 @@ function selectAnswer(index, selectedButton) {
 
 function beginEnding() {
   showScreen(loadingScreen);
-  loadingText.textContent = "putting the pieces together...";
+
+  loadingText.textContent =
+    "putting the pieces together...";
 
   setTimeout(() => {
     showScreen(endingScreen);
@@ -216,20 +217,24 @@ function startTyping() {
       return;
     }
 
-    typedMessage.textContent += finalMessage.charAt(position);
+    typedMessage.textContent +=
+      finalMessage.charAt(position);
+
     position++;
 
-    // Slightly faster for spaces, while keeping the typewriter effect.
     const character = finalMessage.charAt(position - 1);
     const delay = character === "\n" ? 180 : 23;
 
-    typingTimer = setTimeout(typeNextCharacter, delay);
+    typingTimer = setTimeout(
+      typeNextCharacter,
+      delay
+    );
   }
 
   typeNextCharacter();
 }
 
-// Floating sparkles and hearts: visual effects only, no audio.
+// Floating hearts and sparkles — no sound effects.
 function createSparkles() {
   const layer = document.getElementById("sparkles");
   const symbols = ["♡", "✧", "⋆", "♥", "✦"];
@@ -238,14 +243,20 @@ function createSparkles() {
     const sparkle = document.createElement("span");
 
     sparkle.className = "sparkle";
-    sparkle.textContent = symbols[
-      Math.floor(Math.random() * symbols.length)
-    ];
+
+    sparkle.textContent =
+      symbols[Math.floor(Math.random() * symbols.length)];
 
     sparkle.style.left = `${Math.random() * 100}%`;
-    sparkle.style.animationDelay = `${Math.random() * 12}s`;
-    sparkle.style.animationDuration = `${9 + Math.random() * 12}s`;
-    sparkle.style.fontSize = `${10 + Math.random() * 13}px`;
+
+    sparkle.style.animationDelay =
+      `${Math.random() * 12}s`;
+
+    sparkle.style.animationDuration =
+      `${9 + Math.random() * 12}s`;
+
+    sparkle.style.fontSize =
+      `${10 + Math.random() * 13}px`;
 
     layer.appendChild(sparkle);
   }
