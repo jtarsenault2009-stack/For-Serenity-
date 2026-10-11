@@ -3,129 +3,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffb6df">
-  <title>LOVE.EXE ♡</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>♡ Love Club ♡</title>
   <link rel="stylesheet" href="style.css">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
-  <div class="sparkle-layer" id="sparkles"></div>
+  <div id="sparkles" class="sparkle-layer"></div>
 
   <header class="topbar">
-    <span class="brand">♡ LOVE.EXE ♡</span>
-    <span class="online"><i></i> ONLINE</span>
+    <span>♡ 2000s LOVE CLUB ♡</span>
+    <span>● ONLINE</span>
   </header>
 
   <main class="window">
     <div class="window-bar">
-      <span>♥ relationship.exe</span>
-      <span class="window-controls">_　□　×</span>
+      <span>relationship.exe</span>
+      <span>♡ ♡ ♡</span>
     </div>
 
     <div class="content">
 
-      <!-- WELCOME SCREEN -->
       <section id="welcome" class="screen active">
         <div class="sticker">♡</div>
-
-        <p class="eyebrow">✧ WELCOME, CUTIE ✧</p>
-
-        <h1>let's talk<br>about <span>love.</span></h1>
-
+        <p class="eyebrow">WELCOME TO THE LOVE CLUB</p>
+        <h1>let's talk<br>about <span>us...</span></h1>
         <p class="description">
-          a tiny little quiz about relationships, feelings,
-          and all that complicated stuff ♡
+          a little quiz about relationships, feelings, and figuring things out. ♡
         </p>
-
-        <div class="decorative-box">
-          <span>♥</span> 8 QUESTIONS
-          <span>✧</span> NO TIME LIMIT
-          <span>♥</span> JUST FOR FUN
-        </div>
-
-        <button class="main-button" id="startBtn">
-          START THE QUIZ ♡ <span>→</span>
-        </button>
-
-        <p class="tiny-note">
-          best viewed with a little bit of love ⋆౨ৎ˚⟡˖
-        </p>
+        <div class="notice">✧ answer each question to unlock the next screen ✧</div>
+        <button id="startBtn" class="main-btn">START THE QUIZ ♡</button>
+        <p class="tiny">made with a little pink glitter</p>
       </section>
 
-      <!-- QUIZ SCREEN -->
-      <section id="quiz" class="screen">
-        <div class="quiz-heading">
-          <span class="eyebrow">YOUR LITTLE LOVE QUIZ</span>
-          <span id="questionCount">01 / 08</span>
+      <section id="questionScreen" class="screen">
+        <div class="quiz-top">
+          <span id="questionCount">QUESTION 01 / 08</span>
+          <span>♡ LOVE QUIZ</span>
         </div>
-
         <div class="progress-track">
-          <div id="progressBar"></div>
+          <div id="progressBar" class="progress-bar"></div>
         </div>
-
-        <div class="question-sticker">୨୧</div>
-
-        <h2 id="questionText">Loading question...</h2>
-
-        <p id="questionHint" class="description"></p>
-
+        <div class="question-card">
+          <div class="question-heart">♡</div>
+          <h2 id="questionText"></h2>
+          <p id="questionHint"></p>
+        </div>
         <div id="answers" class="answers"></div>
-
         <p id="feedback" class="feedback" aria-live="polite"></p>
-
-        <p class="tiny-note">♡ take your time ♡</p>
+        <p class="tiny">choose your answer carefully ♡</p>
       </section>
 
-      <!-- LOADING SCREEN -->
       <section id="loading" class="screen">
         <div class="loading-heart">♥</div>
-
-        <p class="eyebrow">PROCESSING FEELINGS...</p>
-
-        <h2 id="loadingText">analyzing the results</h2>
-
+        <h2>processing your answers...</h2>
+        <p id="loadingText">please wait ♡</p>
         <div class="loading-track">
-          <div></div>
+          <div class="loading-fill"></div>
         </div>
-
-        <p class="tiny-note">
-          please wait while LOVE.EXE thinks ⋆｡°✩
-        </p>
+        <p class="tiny">connecting to the love club server...</p>
       </section>
 
-      <!-- FINAL MESSAGE SCREEN -->
       <section id="ending" class="screen">
-        <div class="ending-sticker">♡</div>
-
-        <p class="eyebrow">A LITTLE MESSAGE FOR YOU</p>
-
-        <h1 class="ending-title">
-          one last<br><span>thing...</span>
-        </h1>
-
-        <div class="message-paper">
-          <p id="typedMessage"></p><span class="cursor">|</span>
+        <p class="eyebrow">♡ ONE LAST THING ♡</p>
+        <div class="final-sticker">💌</div>
+        <h2 class="final-title">a message for you...</h2>
+        <div class="letter">
+          <p id="typedMessage"></p><span id="cursor" class="cursor">|</span>
         </div>
-
-        <p class="tiny-note">♡ thank you for reading ♡</p>
+        <p class="tiny">thank you for everything ♡</p>
       </section>
 
     </div>
 
-    <footer class="window-footer">
-      <span>♥ made with feelings</span>
-      <span>v.2000 ♡</span>
-    </footer>
+    <div class="window-footer">
+      <span>♥ LOVE CLUB ♥</span>
+      <span>EST. 2000</span>
+    </div>
   </main>
 
-  <footer class="page-footer">
-    <span>ღ</span> XOXO • PINK PIXELS • HEARTS EVERYWHERE <span>ღ</span>
-  </footer>
+  <footer>BEST VIEWED WITH A LITTLE LOVE ♡</footer>
 
   <script src="script.js"></script>
 </body>
